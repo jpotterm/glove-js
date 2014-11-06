@@ -1,11 +1,11 @@
 // -----------------------------------------------------------------------------
-// An animated counter that can be used to animate between to numbers.
+// An animated counter that can be used to animate between two numbers.
 //
 // Options
 //     element: The DOM element whose text will contain the animated number
-//     duration: The length of the animation
-//     fpsCap: The maximum frames per second to use for the animation. Less will
-//         be used if sufficient
+//     duration (optional): The length of the animation in milliseconds. Defaults to 500 ms.
+//     fpsCap (optional): The maximum frames per second to use for the animation. Less will
+//         be used if sufficient. Defaults to 60 fps.
 // -----------------------------------------------------------------------------
 
 function Count(options) {
