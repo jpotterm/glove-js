@@ -48,6 +48,8 @@ function DjangoAjaxForm(options) {
     this.validProperty = options.validProperty;
     this.htmlProperty = options.htmlProperty;
 
+    this.originalHtml = this.fieldWrapperElement.html();
+
     this.form.on('submit', this.submit);
 }
 
@@ -61,7 +63,6 @@ DjangoAjaxForm.prototype.submit = function(e) {
 
     var submitButton = this.form.find('input[type="submit"]');
     var defaultSubmitText = submitButton.val();
-    var originalHtml = this.fieldWrapperElement.html();
 
     submitButton.val(this.processingText);
     $.ajax({
@@ -76,7 +77,7 @@ DjangoAjaxForm.prototype.submit = function(e) {
                 self.messageElement.text(self.validText);
                 self.messageElement.removeClass('error');
                 self.messageElement.addClass('success');
-                self.fieldWrapperElement.html(originalHtml);
+                self.fieldWrapperElement.html(self.originalHtml);
                 $(self).trigger('submit-success');
             } else {
                 self.messageElement.text(self.invalidText);
