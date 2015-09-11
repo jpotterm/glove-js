@@ -105,3 +105,8 @@ utilities.sector = function(cx, cy, r, startAngle, endAngle) {
     res.middle = { x: xm, y: ym };
     return res;
 };
+
+utilities.circularIndex = function(i, length) {
+    if (i < 0) return length + (i % length);
+    else return i % length;
+};

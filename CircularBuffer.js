@@ -9,13 +9,13 @@ function CircularBuffer(limit) {
     this.start = 0;
 }
 
-CircularBuffer.prototype.increment = function(x) {
-    return (x + 1) % this.limit;
+CircularBuffer.prototype.increment = function(i) {
+    return (i + 1) % this.limit;
 }
 
-CircularBuffer.prototype.decrement = function(x) {
-    if (x == 0) return this.limit;
-    else return x - 1;
+CircularBuffer.prototype.decrement = function(i) {
+    if (i == 0) return this.limit - 1;
+    else return i - 1;
 }
 
 CircularBuffer.prototype.get = function(i) {
@@ -38,7 +38,7 @@ CircularBuffer.prototype.append = function(x) {
     }
 };
 
-CircularBuffer.prototype.appendleft = function(x) {
+CircularBuffer.prototype.appendLeft = function(x) {
     this.start = this.decrement(this.start);
 
     if (this.length != this.limit) {
@@ -116,4 +116,3 @@ CircularBuffer.prototype.rotateRight = function(n) {
 
     this.start = (this.start + this.length - (n % this.limit)) % this.limit;
 };
-
