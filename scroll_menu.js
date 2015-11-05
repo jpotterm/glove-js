@@ -72,7 +72,7 @@ ScrollMenu.prototype.handleNavClick = function(e) {
     var $nav = $(e.currentTarget);
     var index = $nav.data('scroll-menu-nav');
     var activeAnchor = this.getAnchor(index);
-    var top = $(activeAnchor).offset().top;
+    var top = $(activeAnchor).offset().top - this.offset;
     this.scrolling = true;
 
     $('html, body').stop().animate({scrollTop: top}, this.duration, this.easing, complete);
