@@ -50,7 +50,10 @@ ScrollMenu.prototype.activeAnchor = function() {
         var anchor = anchors[i];
         var top = anchor.getBoundingClientRect().top - this.offset;
 
-        if (top <= 0 && top > maximumTop) {
+        // 0 < top < 1 can happen because getBoundingClientRect().top can
+        // be a float. We want to include that range because if we try to
+        // scroll to a fractional value the browser will take the floor of it
+        if (top < 1 && top > maximumTop) {
             maximumTop = top;
             maximumAnchor = anchor;
         }
