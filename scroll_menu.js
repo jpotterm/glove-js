@@ -48,12 +48,9 @@ ScrollMenu.prototype.activeAnchor = function() {
 
     for (var i = 0; i < anchors.length; ++i) {
         var anchor = anchors[i];
-        var top = anchor.getBoundingClientRect().top - this.offset;
+        var top = Math.round(anchor.getBoundingClientRect().top - this.offset);
 
-        // 0 < top < 1 can happen because getBoundingClientRect().top can
-        // be a float. We want to include that range because if we try to
-        // scroll to a fractional value the browser will take the floor of it
-        if (top < 1 && top > maximumTop) {
+        if (top <= 0 && top > maximumTop) {
             maximumTop = top;
             maximumAnchor = anchor;
         }
@@ -75,7 +72,7 @@ ScrollMenu.prototype.handleNavClick = function(e) {
     var $nav = $(e.currentTarget);
     var index = $nav.data('scroll-menu-nav');
     var activeAnchor = this.getAnchor(index);
-    var top = $(activeAnchor).offset().top - this.offset;
+    var top = Math.round($(activeAnchor).offset().top - this.offset);
     this.scrolling = true;
 
     $('html, body').stop().animate({scrollTop: top}, this.duration, this.easing, complete);
