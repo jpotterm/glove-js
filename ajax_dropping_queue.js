@@ -34,7 +34,7 @@ AjaxDroppingQueue.prototype.onNext = function(f) {
 
 AjaxDroppingQueue.prototype.complete = function() {
     this.loading = false;
-    if (this.onDeck != null) {
+    if (this.onDeck !== null) {
         var f = this.onDeck;
         this.onDeck = null;
         this.execute(f);
@@ -43,6 +43,6 @@ AjaxDroppingQueue.prototype.complete = function() {
 
 AjaxDroppingQueue.prototype.execute = function(f) {
     var promise = f();
-    promise.always(this.complete);
     this.loading = true;
+    promise.always(this.complete);
 };
