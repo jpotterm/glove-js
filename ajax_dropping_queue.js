@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
-// A queue that only lets on ajax request proceed at a time. If other requests
-// are made it will save the most recent one to run once the current request
+// A queue that only lets one ajax request proceed at a time. If other requests
+// are made it will save the most recent one to run after the current request
 // has finished.
 //
 // Example
