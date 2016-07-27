@@ -1,19 +1,43 @@
 function draggable(target) {
-    var mouseDown = Rx.Observable.fromEvent(target, 'mousedown');
-    var mouseUp = Rx.Observable.fromEvent(window, 'mouseup');
-    var mouseMove = Rx.Observable.fromEvent(window, 'mousemove');
+    function clientX(e) {
+        if (e.touches) {
+            return e.touches[0].clientX;
+        } else {
+            return e.clientX;
+        }
+    }
+
+    function clientY(e) {
+        if (e.touches) {
+            return e.touches[0].clientY;
+        } else {
+            return e.clientY;
+        }
+    }
+
+    var mouseDown = Rx.Observable.merge(
+        Rx.Observable.fromEvent(target, 'mousedown'),
+        Rx.Observable.fromEvent(target, 'touchstart')
+    );
+    var mouseUp = Rx.Observable.merge(
+        Rx.Observable.fromEvent(window, 'mouseup'),
+        Rx.Observable.fromEvent(window, 'touchend')
+    );
+    var mouseMove = Rx.Observable.merge(
+        Rx.Observable.fromEvent(window, 'mousemove'),
+        Rx.Observable.fromEvent(window, 'touchmove')
+    );
 
     var drag = mouseDown.flatMap(function(downEvent) {
-        downEvent.preventDefault();
-
         var rect = downEvent.currentTarget.getBoundingClientRect();
-        var offsetX = downEvent.clientX - rect.left;
-        var offsetY = downEvent.clientY - rect.top;
+        var offsetX = clientX(downEvent) - rect.left;
+        var offsetY = clientY(downEvent) - rect.top;
 
         return mouseMove.map(function(moveEvent) {
             return {
-                x: moveEvent.clientX - offsetX,
-                y: moveEvent.clientY - offsetY,
+                x: clientX(moveEvent) - offsetX,
+                y: clientY(moveEvent) - offsetY,
+                originalEvent: moveEvent,
             }
         })
         .takeUntil(mouseUp);
