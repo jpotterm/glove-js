@@ -1,0 +1,12 @@
+.hero-wipe {
+    position: relative;
+}
+
+.hero-wipe__slide {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
