@@ -1,7 +1,7 @@
-var utilities = utilities || {};
+var util = util || {};
 
 
-utilities.addCommas = function(n) {
+util.addCommas = function(n) {
     var s = n.toString();
     var result = "";
 
@@ -16,7 +16,7 @@ utilities.addCommas = function(n) {
     return result;
 };
 
-utilities.abbreviateNumber = function(value) {
+util.abbreviateNumber = function(value) {
     var newValue = value;
 
     if (value >= 1000) {
@@ -38,7 +38,7 @@ utilities.abbreviateNumber = function(value) {
     return newValue;
 };
 
-utilities.formatFileSize = function(bytes) {
+util.formatFileSize = function(bytes) {
     if (typeof bytes !== 'number') {
         return '';
     }
@@ -51,7 +51,7 @@ utilities.formatFileSize = function(bytes) {
     return (bytes / 1000).toFixed(2) + ' KB';
 };
 
-utilities.repeat = function(s, n) {
+util.repeat = function(s, n) {
     var result = '';
 
     for (var i = 0; i < n; ++i) {
@@ -61,13 +61,13 @@ utilities.repeat = function(s, n) {
     return result;
 };
 
-utilities.zeroFill = function(n, pad) {
+util.zeroFill = function(n, pad) {
     var s = n.toString();
 
-    return utilities.repeat('0', pad - s.length) + s;
+    return util.repeat('0', pad - s.length) + s;
 };
 
-utilities.pluralize = function(word, count) {
+util.pluralize = function(word, count) {
     if (count > 1) {
         return word + 's';
     } else {
@@ -75,19 +75,19 @@ utilities.pluralize = function(word, count) {
     }
 };
 
-utilities.toTitleCase = function(str) {
+util.toTitleCase = function(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
 
-utilities.splitUnquotedWhitespace = function(str) {
+util.splitUnquotedWhitespace = function(str) {
     return str.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
 };
 
-utilities.stripPunctuation = function(s) {
+util.stripPunctuation = function(s) {
     return s.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,'');
 };
 
-utilities.sector = function(cx, cy, r, startAngle, endAngle) {
+util.sector = function(cx, cy, r, startAngle, endAngle) {
     var rad = Math.PI / 180,
         x1 = cx + r * Math.cos(-startAngle * rad),
         x2 = cx + r * Math.cos(-endAngle * rad),
@@ -106,7 +106,7 @@ utilities.sector = function(cx, cy, r, startAngle, endAngle) {
     return res;
 };
 
-utilities.circularIndex = function(i, length) {
+util.circularIndex = function(i, length) {
     if (i < 0) return length + (i % length);
     else return i % length;
 };
