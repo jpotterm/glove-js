@@ -29,9 +29,8 @@ function draggable(target) {
     );
 
     var drag = mouseDown.flatMap(function(downEvent) {
-        var rect = downEvent.currentTarget.getBoundingClientRect();
-        var offsetX = clientX(downEvent) - rect.left;
-        var offsetY = clientY(downEvent) - rect.top;
+        var offsetX = clientX(downEvent);
+        var offsetY = clientY(downEvent);
 
         return mouseMove.map(function(moveEvent) {
             return {

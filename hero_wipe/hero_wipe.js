@@ -1,8 +1,17 @@
+// -----------------------------------------------------------------------------
+// Options
+//     dragThreshold (optional): Percentage a drag needs to be to change slides.
+//     consecutiveDelay (optional): Delay between slides. This is for mitigating
+//         momentum scrolling.
+//     cumulativeWheelThreshold (optional): Amount of wheel needed to change slides.
+// -----------------------------------------------------------------------------
 function HeroWipe(options) {
     this.bindThis();
 
     var defaultOptions = {
         dragThreshold: 0.15,
+        consecutiveDelay: 300,
+        cumulativeWheelThreshold: 40,
     };
 
     options = $.extend(defaultOptions, options);
@@ -14,6 +23,9 @@ function HeroWipe(options) {
     this.$slides = $(this.parent).find('.hero-wipe__slide');
     this.duration = options.duration;
     this.dragThreshold = options.dragThreshold;
+    this.consecutiveDelay = options.consecutiveDelay;
+    this.cumulativeWheel = 0;
+    this.cumulativeWheelThreshold = options.cumulativeWheelThreshold;
 
     this.parentHeight = this.parent.offsetHeight;
     this.activeIndex = 0;
@@ -145,23 +157,29 @@ HeroWipe.prototype.transitionComplete = function(newSlide, activeSlide, newIndex
 
     this.activeIndex = newIndex;
     this.pager.goToPage(newIndex);
-    this.transitionInProgress = false;
+
+    setTimeout(function() {
+        this.cumulativeWheel = 0;
+        this.transitionInProgress = false;
+    }.bind(this), this.consecutiveDelay);
 };
 
 HeroWipe.prototype.wheel = function(e) {
     if (e.deltaY > 0) {
-        if (this.hasSlide(this.activeIndex + 1)) {
+        if (window.pageYOffset === 0 && this.hasSlide(this.activeIndex + 1)) {
             e.preventDefault();
+            this.cumulativeWheel += e.deltaY;
 
-            if (!this.transitionInProgress) {
+            if (!this.transitionInProgress && this.cumulativeWheel > this.cumulativeWheelThreshold) {
                 this.next();
             }
         }
     } else if (e.deltaY < 0) {
-        if (window.scrollY === 0) {
+        if (window.pageYOffset === 0 && this.hasSlide(this.activeIndex - 1)) {
             e.preventDefault();
+            this.cumulativeWheel += e.deltaY;
 
-            if (!this.transitionInProgress) {
+            if (!this.transitionInProgress && this.cumulativeWheel < -this.cumulativeWheelThreshold) {
                 this.previous();
             }
         }
@@ -202,7 +220,7 @@ HeroWipe.prototype.dragMove = function(e) {
             }
         }
     } else {
-        if (window.scrollY === 0) {
+        if (window.pageYOffset === 0) {
             e.originalEvent.preventDefault();
 
             if (!this.transitionInProgress) {

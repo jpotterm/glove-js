@@ -1,31 +1,53 @@
+// -----------------------------------------------------------------------------
+// Tie elements' heights together so that each element is the height of the
+// tallest one.
+//
+// Options
+//     elements: An array DOM nodes.
+//
+// Dependencies
+//     jquery
+//
+// Example
+//     HTML
+//         <div></div>
+//         <div></div>
+//         <div></div>
+//
+//     JavaScript
+//         new EqualizeHeights({
+//             elements: $('div'),
+//         });
+// -----------------------------------------------------------------------------
 function EqualizeHeights(options) {
     this.bindThis();
 
-    var defaultOptions = {
-        windowMinWidth: 0,
-        windowMaxWidth: Infinity,
-    };
+    var defaultOptions = {};
 
     options = $.extend(defaultOptions, options);
 
     this.elements = options.elements;
-    this.windowMinWidth = options.windowMinWidth;
-    this.windowMaxWidth = options.windowMaxWidth;
+    this.applyStyles();
 
-    $(window).on('resize load', this.handleResize);
+    $(window).on('load resize', this.resize);
+    this.resize();
 }
 
 EqualizeHeights.prototype.bindThis = function() {
-    this.handleResize = this.handleResize.bind(this);
+    this.resize = this.resize.bind(this);
 };
 
-EqualizeHeights.prototype.handleResize = function() {
-    this.clearHeights();
-
-    if (window.innerWidth >= this.windowMinWidth && window.innerWidth <= this.windowMaxWidth) {
-        var maxHeight = this.getMaxHeight();
-        this.setHeights(maxHeight);
+EqualizeHeights.prototype.applyStyles = function() {
+    for (var i = 0; i < this.elements.length; ++i) {
+        var element = this.elements[i];
+        element.style.boxSizing = 'border-box';
     }
+};
+
+EqualizeHeights.prototype.resize = function() {
+    this.clearHeights();
+    var maxHeight = this.getMaxHeight();
+    this.setHeights(maxHeight);
 };
 
 EqualizeHeights.prototype.getMaxHeight = function() {
