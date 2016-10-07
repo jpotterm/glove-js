@@ -1,5 +1,6 @@
 // -----------------------------------------------------------------------------
-// A circular buffer implementation that works as described here: http://en.wikipedia.org/wiki/Circular_buffer
+// A circular buffer implementation that works as described
+// here: http://en.wikipedia.org/wiki/Circular_buffer
 // -----------------------------------------------------------------------------
 
 function CircularBuffer(limit) {
@@ -9,37 +10,56 @@ function CircularBuffer(limit) {
     this.start = 0;
 }
 
-CircularBuffer.prototype.increment = function(i) {
-    return (i + 1) % this.limit;
-}
+CircularBuffer.prototype.copy = function() {
+    var result = new CircularBuffer(this.limit);
+    result.array = this.array.slice();
+    result.length = this.length;
+    result.start = this.start;
+    return result;
+};
 
-CircularBuffer.prototype.decrement = function(i) {
-    if (i == 0) return this.limit - 1;
-    else return i - 1;
-}
+CircularBuffer.prototype.normalizeIndex = function(i, n) {
+    return ((i % n) + n) % n;
+};
+
+CircularBuffer.prototype.realIndexLimit = function(i) {
+    return this.normalizeIndex(this.start + i, this.limit);
+};
+
+CircularBuffer.prototype.realIndexLength = function(i) {
+    return this.normalizeIndex(this.start + this.normalizeIndex(i, this.length), this.limit);
+};
 
 CircularBuffer.prototype.get = function(i) {
-    return this.array[(this.start + i) % this.limit];
+    if (this.length === 0) return null;
+
+    return this.array[this.realIndexLength(i)];
 };
 
-CircularBuffer.prototype.appendAll = function(xs) {
-    for (var i = 0; i < xs.length; ++i) {
-        this.append(xs[i]);
-    }
+CircularBuffer.prototype.set = function(i, value) {
+    if (this.length === 0) return;
+
+    this.array[this.realIndexLength(i)] = value;
 };
 
-CircularBuffer.prototype.append = function(x) {
-    this.array[(this.start + this.length) % this.limit] = x;
+CircularBuffer.prototype.push = function(x) {
+    this.array[this.realIndexLimit(this.length)] = x;
 
-    if (this.length == this.limit) {
-        this.start = this.increment(this.start);
+    if (this.length === this.limit) {
+        this.start = this.realIndexLimit(1);
     } else {
         this.length += 1;
     }
 };
 
-CircularBuffer.prototype.appendLeft = function(x) {
-    this.start = this.decrement(this.start);
+CircularBuffer.prototype.pushAll = function(xs) {
+    for (var i = 0; i < xs.length; ++i) {
+        this.push(xs[i]);
+    }
+};
+
+CircularBuffer.prototype.pushLeft = function(x) {
+    this.start = this.realIndexLimit(-1);
 
     if (this.length != this.limit) {
         this.length += 1;
@@ -49,21 +69,21 @@ CircularBuffer.prototype.appendLeft = function(x) {
 };
 
 CircularBuffer.prototype.pop = function() {
-    if (this.length == 0) return;
+    if (this.length === 0) return null;
 
-    var element = this.array[(this.start + this.length - 1) % this.limit];
+    var element = this.array[this.realIndexLength(-1)];
 
     this.length -= 1;
 
     return element;
 };
 
-CircularBuffer.prototype.popleft = function() {
-    if (this.length == 0) return;
+CircularBuffer.prototype.popLeft = function() {
+    if (this.length === 0) return null;
 
     var element = this.array[this.start];
 
-    this.start = this.increment(this.start);
+    this.start = this.realIndexLimit(1);
 
     this.length -= 1;
 
@@ -74,26 +94,19 @@ CircularBuffer.prototype.clear = function() {
     this.length = 0;
 };
 
-CircularBuffer.prototype.toString = function() {
-    var s = '[';
+CircularBuffer.prototype.toArray = function() {
+    var result = [];
 
     for (var i = 0; i < this.length; ++i) {
-        if (i != 0) {
-            s += ',';
-        }
-
-        s += this.get(i);
+        result.push(this.get(i));
     }
 
-    s += ']';
-
-    return s;
+    return result;
 };
-
 
 CircularBuffer.prototype.indexOf = function(x) {
     for (var i = 0; i < this.length; ++i) {
-        if (this.get(i) == x) {
+        if (this.get(i) === x) {
             return i;
         }
     }
@@ -102,17 +115,63 @@ CircularBuffer.prototype.indexOf = function(x) {
 };
 
 CircularBuffer.prototype.rotateLeft = function(n) {
-    if (n == undefined) {
+    if (n === undefined) {
         n = 1;
     }
 
-    this.start = (this.start + n) % this.limit;
+    if (n < 0) {
+        return this.rotateRight(-n);
+    }
+
+    if (this.length === this.limit) {
+        this.start = this.realIndexLength(n);
+    } else {
+        for (var i = 0; i < n; ++i) {
+            this.push(this.popLeft());
+        }
+    }
 };
 
 CircularBuffer.prototype.rotateRight = function(n) {
-    if (n == undefined) {
+    if (n === undefined) {
         n = 1;
     }
 
-    this.start = (this.start + this.length - (n % this.limit)) % this.limit;
+    if (n < 0) {
+        return this.rotateLeft(-n);
+    }
+
+    if (this.length === this.limit) {
+        this.start = this.realIndexLength(-n);
+    } else {
+        for (var i = 0; i < n; ++i) {
+            this.pushLeft(this.pop());
+        }
+    }
 };
+
+CircularBuffer.prototype.slice = function(begin, end) {
+    function normalizeIndex(index, length) {
+        if (index < 0) {
+            return Math.max(length + index, 0);
+        } else if (index > length) {
+            return length;
+        } else {
+            return index;
+        }
+    }
+
+    if (begin === undefined) return;
+
+    if (end === undefined) {
+        end = this.length;
+    }
+
+    begin = normalizeIndex(begin, this.length);
+    end = normalizeIndex(end, this.length);
+
+    this.start = this.realIndexLimit(begin);
+    this.length = end - begin;
+};
+
+if (typeof module === 'object' && module.exports) module.exports = CircularBuffer;
