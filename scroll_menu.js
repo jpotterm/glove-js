@@ -3,7 +3,8 @@
 //
 // Options
 //     items: An array of objects {nav: navElement, anchor: anchorElement}
-//         where navElement and anchorElement are DOM nodes.
+//         where navElement and anchorElement are DOM nodes. `navElement` is the one you
+//         click, and `anchorElement` is where it scrolls to.
 //     offset (optional): Extra distance to add between the top of the window and the anchor.
 //         Defaults to 0.
 //     activeClass (optional): The class name to use for the active tab.

@@ -2,20 +2,20 @@ function SelectEmptyClass(options) {
     this.bindThis();
 
     var defaults = {
-        emptyClass: 'empty'
+        emptyClass: 'select-empty-class--empty'
     };
 
-    options = $.extend(defaults, options);
+    options = R.merge(defaults, options);
 
-    this.select = $(options.select);
+    this.select = options.select;
     this.emptyClass = options.emptyClass;
 
     this.checkEmpty();
-    this.select.on('change', this.change);
+    this.select.addEventListener('change', this.change);
 }
 
 SelectEmptyClass.prototype.bindThis = function() {
-    this.change = $.proxy(this.change, this);
+    this.change = this.change.bind(this);
 };
 
 SelectEmptyClass.prototype.change = function(e) {
@@ -23,9 +23,9 @@ SelectEmptyClass.prototype.change = function(e) {
 };
 
 SelectEmptyClass.prototype.checkEmpty = function() {
-    if (this.select[0].value == '') {
-        this.select.addClass(this.emptyClass);
+    if (this.select.value == '') {
+        this.select.classList.add(this.emptyClass);
     } else {
-        this.select.removeClass(this.emptyClass);
+        this.select.classList.remove(this.emptyClass);
     }
 };
